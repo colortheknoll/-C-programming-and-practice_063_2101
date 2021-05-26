@@ -2,47 +2,29 @@
 
 #include "Block.h"
 #include "Board.h"
+#include "gotoxy.h"
+
+#include <iostream>
 
 
 int block_list[7][4][4][2] = {
-	//Oë¯¸ë…¸ : 1
-	{ { {0,0},{1,0},{0,1},{1,1} }, 
-	{ {0,0},{1,0},{0,1},{1,1} }, 
-	{ {0,0},{1,0},{0,1},{1,1} }, 
-	{ {0,0},{1,0},{0,1},{1,1} } },
-	//Ië¯¸ë…¸ : 2
-	{ { {0,0},{1,0},{2,0},{3,0} }, 
-	{ {0,0},{0,1},{0,2},{0,3} }, 
-	{ {0,0},{1,0},{2,0},{3,0} }, 
-	{ {0,0},{0,1},{0,2},{0,3} } },
-	//Zë¯¸ë…¸ : 3
-	{ { {0,0},{0,1},{1,1},{1,2} }, 
-	{ {1,0},{0,1},{1,1},{2,0} }, 
-	{ {0,0},{0,1},{1,1},{1,2} }, 
-	{ {1,0},{0,1},{1,1},{2,0} } },
-	//Së¯¸ë…¸ : 4
-	{ { {0,1},{1,0},{1,1},{0,2} }, 
-	{ {0,0},{1,0},{1,1},{2,1} }, 
-	{ {0,1},{1,0},{1,1},{0,2} }, 
-	{ {0,0},{1,0},{1,1},{2,1} } },
-	//Jë¯¸ë…¸ : 5
-	{ { {0,1},{1,1},{2,1},{2,0} }, 
-	{ {0,0},{1,0},{1,1},{1,2} }, 
-	{ {0,0},{1,0},{0,1},{2,0} }, 
-	{ {0,0},{0,1},{0,2},{1,2} } },
-	//Lë¯¸ë…¸ : 6
-	{ { {0,0},{1,0},{2,0},{2,1} }, 
-	{ {0,0},{0,1},{1,0},{0,2} }, 
-	{ {0,0},{0,1},{1,1},{2,1} }, 
-	{ {1,0},{1,1},{1,2},{0,2} } },
-	//Të¯¸ë…¸ : 7
-	{ { {1,0},{0,1},{1,1},{1,2} }, 
-	{ {0,0},{1,0},{2,0},{1,1} }, 
-	{ {0,0},{0,1},{0,2},{1,1} }, 
-	{ {1,0},{0,1},{1,1},{2,1} } },
+	//O¹Ì³ë : 1
+	{ { {0,0},{1,0},{0,1},{1,1} }, { {0,0},{1,0},{0,1},{1,1} }, { {0,0},{1,0},{0,1},{1,1} }, { {0,0},{1,0},{0,1},{1,1} } },
+	//I¹Ì³ë : 2
+	{ { {0,0},{1,0},{2,0},{3,0} }, { {0,0},{0,1},{0,2},{0,3} }, { {0,0},{1,0},{2,0},{3,0} }, { {0,0},{0,1},{0,2},{0,3} } },
+	//Z¹Ì³ë : 3
+	{ { {0,0},{0,1},{1,1},{1,2} }, { {1,0},{0,1},{1,1},{2,0} }, { {0,0},{0,1},{1,1},{1,2} }, { {1,0},{0,1},{1,1},{2,0} } },
+	//S¹Ì³ë : 4
+	{ { {0,1},{1,0},{1,1},{0,2} }, { {0,0},{1,0},{1,1},{2,1} }, { {0,1},{1,0},{1,1},{0,2} }, { {0,0},{1,0},{1,1},{2,1} } },
+	//J¹Ì³ë : 5
+	{ { {0,1},{1,1},{2,1},{2,0} }, { {0,0},{1,0},{1,1},{1,2} }, { {0,0},{1,0},{0,1},{2,0} }, { {0,0},{0,1},{0,2},{1,2} } },
+	//L¹Ì³ë : 6
+	{ { {0,0},{1,0},{2,0},{2,1} }, { {0,0},{0,1},{1,0},{0,2} }, { {0,0},{0,1},{1,1},{2,1} }, { {1,0},{1,1},{1,2},{0,2} } },
+	//T¹Ì³ë : 7
+	{ { {1,0},{0,1},{1,1},{1,2} }, { {0,0},{1,0},{2,0},{1,1} }, { {0,0},{0,1},{0,2},{1,1} }, { {1,0},{0,1},{1,1},{2,1} } },
 };
 
-    
+
 bool Block::can_place_on_board()
 {
 	for (int i = 0; i < 4; i++) {
@@ -52,7 +34,7 @@ bool Block::can_place_on_board()
 		if (0 != board->board_status(ny, nx)) return false;
 	}
 	
-	return true;
+	return true;;
 }
 
 void Block::draw_block()
@@ -75,8 +57,79 @@ void Block::erase_block()
 	}
 }
 
-void Block::move_down()
-{	
+Block& Block::create_block(int type)
+{
+	x = 5;
+	y = 4;
+	shape = type;
+	direction = 0;
+	stop = false;
+	return *this;
+}
+
+void Block::rotate_block() // Æí°æÂù ÀÛ¼º
+{
+
+	Block::erase_block();  // ÀÏ´Ü Áö¿ì°í 
+
+	direction = direction + 1;		// ¸ð¾çµµ µ¹·Á³õ°í 
+	if (direction == 4)
+		direction = 0;
+
+	if (Block::can_place_on_board())	 	//true¸é µ¹¸° ¸ð¾ç ±×¸®°í 
+		Block::draw_block();
+
+	else
+	{
+		direction = direction - 1;		//false¸é µ¹¸®±âÀü ¸ð¾ç ±×¸®°í 
+		Block::draw_block();
+	}
+}
+
+Block& Block::get_block(Block* block)
+{
+	this->x = block->x;
+	this->y = block->y;
+	this->direction = block->direction;
+	this->shape = block->shape;
+	this->stop = block->stop;
+
+	return *this;
+}
+Block& Block::get_keep(Block* block)
+{
+	this->direction = 0;
+	this->shape = block->shape;
+	this->stop = block->stop;
+
+	return *this;
+}
+
+void Block::print_block(int y, int x, int print_type, bool valid)
+{
+	if (print_type == 1) {
+		gotoxy(y, x); std::cout << "¡à¡à Next ¡à¡à";
+	}
+	else {
+		gotoxy(y, x); std::cout << "¡à¡à Keep ¡à¡à";
+	}
+	for (int i = 1; i < 6; i++) {
+		gotoxy(y + i, x); std::cout << "¡à          ¡à";
+	}
+	gotoxy(y+6, x); std::cout << "¡à¡à¡à¡à¡à¡à¡à";
+
+	if (valid) {
+		for (int i = 0; i < 4; i++) {
+			gotoxy(y + 2 + block_list[shape][0][i][0], x + 4 + block_list[shape][0][i][1] * 2);
+			std::cout << "¡á";
+		}
+	}
+	
+	
+}
+
+void Block::move_down() //±èÃ¤¿ø ÀÛ¼º
+{
 	erase_block();
 	this->y += 1;
 	if (can_place_on_board()) {
@@ -85,10 +138,11 @@ void Block::move_down()
 	else {
 		this->y -= 1;
 		Block::stop = true;
+		draw_block();
 	}
 }
 
-void Block::move_left()
+void Block::move_left() //±èÃ¤¿ø ÀÛ¼º
 {
 	erase_block();
 	this->x -= 1;
@@ -101,7 +155,7 @@ void Block::move_left()
 	}
 }
 
-void Block::move_right()
+void Block::move_right() //±èÃ¤¿ø ÀÛ¼º
 {
 	erase_block();
 	this->x += 1;
@@ -112,4 +166,10 @@ void Block::move_right()
 		this->x -= 1;
 		draw_block();
 	}
+}
+
+bool Block::is_stop()
+{
+	if (stop) return true;
+	return false;
 }
