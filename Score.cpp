@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Score.h"
-#include "gotoxy.h"
+#include "func.h"
 
 #include <iostream>
 
@@ -13,21 +13,28 @@ namespace SPEED {
 	};
 }
 
-void Score::score_up() { //ver.2 추가
+void Score::score_up() { 
 	score += 200 / *speed;
 }
 
-void Score::print_score_speed() { //ver.2 추가
-	gotoxy(22, 30);
-	cout << " Score : ";
-	gotoxy(22, 39);
-	cout << score;
-	gotoxy(23, 30);
-	cout << " Level: ";
-	gotoxy(23, 39);
-	cout << *level;
-	gotoxy(24, 30); //나중에 삭제할 부분 게임하면서 스피드 확인하려고 잠깐 넣어둠
-	cout << *speed;
+void Score::print_score_speed() {
+	//테두리
+	gotoxy(13, 52);
+	cout << "□□□□□□";
+	for (int i = 0; i <= 8; i++) {
+		gotoxy(14 + i, 52);
+		cout << "□　　　　□";
+	}
+	gotoxy(22, 52);
+	cout << "□□□□□□";
+
+	//내용
+	gotoxy(16, 53);
+	cout << " Level: " << *level;
+	gotoxy(18, 53);
+	cout << " Score: " << score;
+	//gotoxy(20, 53); //나중에 삭제할 부분 게임하면서 스피드 확인하려고 잠깐 넣어둠
+	//cout << " Speed: " << *speed;
 }
 
 void Score::change_speed(int* level) {
